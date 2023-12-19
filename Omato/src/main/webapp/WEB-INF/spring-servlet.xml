@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- Provide support for component scanning -->
+    <context:component-scan base-package="omato"/>
+    <mvc:annotation-driven/>
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="dataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/mydb"/>
+        <property name="username" value="root"/>
+        <property name="password" value="SkyTech@12"/>
+    </bean>
+
+    <bean class="org.springframework.jdbc.core.JdbcTemplate" id="jdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="/WEB-INF/message"/>
+    </bean>
+    <bean class="omato.dao.impl.OrderDaoImpl" id="orderDao">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+    <bean class="omato.service.impl.OrderServiceImpl" id="orderService">
+        <property name="orderDao" ref="orderDao"/>
+    </bean>
+    <bean class="omato.dao.impl.ProductDaoImpl" id="productDao">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+<bean class="omato.service.impl.ProductServiceImpl" id="productService">
+    <property name="productDao" ref="productDao"/>
+  </bean>
+
+    <bean class="omato.dao.impl.SecurityDaoImpl" id="securityDao">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+    <bean class="omato.security.impl.SecurityServiceImpl" id="securityService">
+        <property name="securityDao" ref="securityDao"/>
+    </bean>
+    <bean class="omato.validator.SignUpValidator" id="signUpValidator">
+        <property name="securityService" ref="securityService"/>
+    </bean>
+<bean class="omato.validator.AddressValidator" id="addressValidator"></bean>
+</beans>
